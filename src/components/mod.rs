@@ -1,3 +1,4 @@
+mod ai_review_panel;
 mod app;
 mod footer;
 mod header;

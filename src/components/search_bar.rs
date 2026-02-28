@@ -89,6 +89,40 @@ pub fn search_bar(props: &SearchBarProps) -> Html {
                             <p class="token-hint">
                                 {"Le token n'est jamais stocké. Il est utilisé uniquement pour les appels API dans votre navigateur."}
                             </p>
+                            <details class="token-help">
+                                <summary class="token-help-title">{"📖 Comment obtenir un token?"}</summary>
+                                <div class="token-help-content">
+                                    <p class="token-help-section-label">{"🔑 Token fine-grained (requis pour l'analyse IA)"}</p>
+                                    <ol>
+                                        <li>
+                                            {"Allez sur "}
+                                            <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">
+                                                {"Settings → Developer settings → Personal access tokens → Fine-grained tokens"}
+                                            </a>
+                                        </li>
+                                        <li>{"Cliquez sur \"Generate new token\""}</li>
+                                        <li>{"Donnez-lui un nom (ex: \"CI/CD Checker\") et une expiration"}</li>
+                                        <li>
+                                            {"Dans \"Account permissions\", activez "}
+                                            <code>{"Models"}</code>
+                                            {" → Read-only"}
+                                        </li>
+                                        <li>
+                                            {"Dans \"Repository permissions\", activez "}
+                                            <code>{"Contents"}</code>
+                                            {" → Read-only (checks avancés)"}
+                                        </li>
+                                        <li>{"Cliquez sur \"Generate token\" et copiez-le ci-dessus"}</li>
+                                    </ol>
+                                    <p class="token-help-note">
+                                        <strong>{"⚠️ Important :"}</strong>
+                                        {" L'analyse IA via GitHub Models nécessite impérativement un \
+                                          fine-grained token avec la permission "}
+                                        <code>{"Models"}</code>
+                                        {". Les classic tokens ne fonctionnent pas pour cette fonctionnalité."}
+                                    </p>
+                                </div>
+                            </details>
                         </div>
                     }
                 </div>

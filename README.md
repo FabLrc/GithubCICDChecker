@@ -192,14 +192,14 @@ Le workflow CI/CD (`.github/workflows/deploy.yml`) est déjà configuré :
 - [x] 30 checks automatisés via l'API GitHub (18 initiaux + 12 avancés)
 - [x] Interface PageSpeed Insights (score circulaire, 6 catégories par domaine, détails)
 - [x] Suggestions d'amélioration pour chaque check échoué
-- [x] Support du GitHub PAT optionnel
+- [x] Support du GitHub PAT (fine-grained) pour les checks avancés et l'IA
 - [x] Build WASM + déploiement GitHub Pages
 
-### Phase 2 — AI Review (à venir)
+### Phase 2 — AI Review
 
-- [ ] Intégrer un appel à GitHub Models API (GPT-4o) pour analyser les workflows YAML
-- [ ] Afficher les recommandations IA dans un panneau dédié
-- [ ] Suggestions contextuelles basées sur les checks échoués
+- [x] Intégration GitHub Models API (GPT-4.1-mini) pour analyse IA des workflows YAML
+- [x] Recommandations IA affichées dans un panneau dédié
+- [x] Suggestions contextuelles basées sur les checks échoués
 
 ### Phase 3 — UX & Fonctionnalités Avancées
 

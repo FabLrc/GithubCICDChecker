@@ -90,7 +90,11 @@ pub fn app() -> Html {
                         </div>
                     },
                     AnalysisState::Done(report) => html! {
-                        <Results report={report.clone()} on_reset={on_reset.clone()} />
+                        <Results
+                            report={report.clone()}
+                            on_reset={on_reset.clone()}
+                            token={(*token).clone()}
+                        />
                     },
                     AnalysisState::Error(msg) => html! {
                         <div class="error-section">

@@ -241,6 +241,93 @@ body {
     line-height: 1.4;
 }
 
+/* Token help (how to get token) */
+.token-help {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: var(--color-skipped-bg);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+}
+
+.token-help-title {
+    cursor: pointer;
+    user-select: none;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-primary);
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+    font-family: var(--font-sans);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.token-help-title:hover {
+    color: var(--color-primary-hover);
+}
+
+.token-help-content {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-border);
+}
+
+.token-help-content ol {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 13px;
+    color: var(--color-text);
+    line-height: 1.65;
+}
+
+.token-help-section-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 10px;
+}
+
+.token-help-content li {
+    margin-bottom: 8px;
+}
+
+.token-help-content a {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.token-help-content a:hover {
+    text-decoration: underline;
+}
+
+.token-help-content code {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.token-help-note {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: rgba(255, 165, 0, 0.08);
+    border-left: 3px solid var(--color-orange);
+    border-radius: 0 4px 4px 0;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+}
+
+.token-help-note strong {
+    color: var(--color-text);
+}
+
 /* ── Hero Section (idle state) ── */
 .hero-section {
     text-align: center;
@@ -616,6 +703,206 @@ body {
     font-size: 12px;
     color: var(--color-text-secondary);
     margin-top: 32px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   AI Review Panel
+   ═══════════════════════════════════════════════════════════ */
+
+.ai-review-panel {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    margin: 24px 0;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Header row: icon + title + badge */
+.ai-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.ai-panel-icon {
+    font-size: 22px;
+    line-height: 1;
+}
+
+.ai-panel-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0;
+}
+
+.ai-panel-badge {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgba(26, 115, 232, 0.10);
+    color: var(--color-primary);
+    border: 1px solid rgba(26, 115, 232, 0.20);
+}
+
+/* State containers */
+.ai-state {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* Idle */
+.ai-idle-text {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    max-width: 560px;
+}
+
+.btn-ai-request {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: var(--color-primary);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s ease, transform 0.12s ease;
+}
+
+.btn-ai-request:hover {
+    background: var(--color-primary-hover);
+    transform: translateY(-1px);
+}
+
+.btn-ai-request:active {
+    transform: translateY(0);
+}
+
+/* Loading */
+.ai-state--loading {
+    align-items: center;
+    padding: 16px 0;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    gap: 12px;
+}
+
+.ai-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: ai-spin 0.75s linear infinite;
+}
+
+@keyframes ai-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Unavailable */
+.ai-state--unavailable {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    background: var(--color-skipped-bg);
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    line-height: 1.6;
+}
+
+/* Error */
+.ai-state--error {
+    gap: 12px;
+}
+
+.ai-error-text {
+    font-size: 14px;
+    color: var(--color-red);
+    background: var(--color-red-bg);
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    line-height: 1.5;
+}
+
+/* Done — summary + recommendation cards */
+.ai-summary {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    line-height: 1.65;
+    padding: 14px 16px;
+    background: rgba(26, 115, 232, 0.05);
+    border-left: 3px solid var(--color-primary);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.ai-recommendations {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.ai-rec-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 16px 18px;
+    background: var(--color-surface);
+    transition: box-shadow 0.15s ease;
+}
+
+.ai-rec-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.ai-rec-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.ai-rec-priority {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.ai-rec-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0;
+}
+
+.ai-rec-description {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Small secondary button variant */
+.btn-sm {
+    padding: 6px 14px;
+    font-size: 13px;
 }
 
 /* ── Footer ── */
