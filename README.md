@@ -10,7 +10,7 @@
 
 ## Présentation
 
-**GitHub CI/CD Checker** est une application web qui analyse la qualité de la pipeline CI/CD d'un dépôt GitHub et attribue un **score sur 125 points**, réparti en 4 catégories. L'interface est inspirée de [Google PageSpeed Insights](https://pagespeed.web.dev/) : un score circulaire, un code couleur (vert/orange/rouge), et des recommandations actionables pour chaque check.
+**GitHub CI/CD Checker** est une application web qui analyse la qualité de la pipeline CI/CD d'un dépôt GitHub et attribue un **score de qualité** selon le pourcentage de checks réussis, réparti en 6 domaines fonctionnels. L'interface est inspirée de [Google PageSpeed Insights](https://pagespeed.web.dev/) : un score circulaire, un code couleur (vert/orange/rouge), et des recommandations actionables pour chaque check.
 
 **Tout tourne dans le navigateur** — aucun backend requis. L'application est compilée en WebAssembly (Rust → WASM) et appelle directement l'API GitHub depuis le browser.
 
@@ -22,7 +22,7 @@
 
 ## Fonctionnalités
 
-- **18 checks automatisés** couvrant pipelines, tests, sécurité, déploiement et bonnes pratiques
+- **30 checks automatisés** couvrant pipelines CI, tests, sécurité, conteneurisation, déploiement et bonnes pratiques
 - **Score visuel** avec jauge circulaire à la PageSpeed Insights
 - **Détail par catégorie** avec suggestions d'amélioration pour chaque check échoué
 - **Fonctionne sans token** (les repos publics) — token optionnel pour les checks avancés (branch protection)
@@ -31,46 +31,68 @@
 
 ---
 
-## Grille de Scoring
+## Grille de Scoring (30 checks)
 
-### 🟢 Fondamentaux
+### 🔄 Pipeline CI (7 checks)
 
 | Check | Description |
 |-------|-------------|
 | Pipeline CI existe | Workflow YAML dans `.github/workflows/` |
 | Pipeline vert sur main | Dernier run sur `main` est en succès |
+| Pipeline rapide (< 5 min) | Durée moyenne des runs < 5 minutes |
+| Cache CI optimisé | actions/cache ou Docker layer cache |
+| Tests en matrice | Stratégie matrix pour multi-version |
+| Workflows réutilisables | workflow_call défini ou appelé |
+| Notifications CI | Discord/Slack webhooks configurés |
+
+### 🧪 Qualité & Tests (5 checks)
+
+| Check | Description |
+|-------|-------------|
 | Tests présents | Tests détectés et exécutés dans la CI |
+| Tests passent dans CI | Pipeline vert + tests exécutés |
 | Lint dans la CI | Step de lint/formatage configuré |
-| Dockerfile présent | Dockerfile à la racine |
-| Docker build dans CI | Étape de build Docker dans le pipeline |
+| Coverage configurée | Couverture de code instrumentée |
+| Quality gate | SonarCloud / CodeClimate / Codacy intégré |
+
+### 🔒 Sécurité (4 checks)
+
+| Check | Description |
+|-------|-------------|
 | Pas de secrets dans le code | Aucun secret hardcodé détecté |
-| README présent | Fichier README.md à la racine |
-
-### 🔵 Intermédiaire
-
-| Check | Description |
-|-------|-------------|
-| Scan de sécurité | Trivy / Snyk / CodeQL / etc. dans la CI |
-| Coverage configurée | Couverture de code configurée |
+| Scan de sécurité | Trivy / Snyk / Bandit / CodeQL |
 | Dependabot / Renovate | Mise à jour auto des dépendances |
+| Protection de branche | `main` protégée avec PR obligatoire |
 
-### 🟡 Avancé
-
-| Check | Description |
-|-------|-------------|
-| Protection de branche | `main` protégée, PR obligatoire |
-| Pipeline rapide (< 5 min) | Durée raisonnable des runs |
-| Multi-environnements | staging + prod configurés |
-| Déploiement automatique | Deploy auto sur push main |
-
-### ⭐ Bonus
+### 🐳 Conteneurisation (3 checks)
 
 | Check | Description |
 |-------|-------------|
-| CODEOWNERS présent | Propriétaires du code définis |
+| Dockerfile présent | Dockerfile à la racine du projet |
+| Docker build dans CI | Étape de build Docker dans le pipeline |
+| Image publiée sur GHCR | docker/build-push-action vers ghcr.io |
+
+### 🚀 Déploiement (4 checks)
+
+| Check | Description |
+|-------|-------------|
+| Déploiement automatique | Deploy auto sur push/merge main |
+| Multi-environnements | staging + production configurés |
+| Tests smoke / e2e post-déploiement | Vérification post-déploiement |
+| Stratégie de rollback | Mécanisme de rollback ou recovery |
+
+### 📋 Bonnes Pratiques (6 checks)
+
+| Check | Description |
+|-------|-------------|
+| README présent | Fichier README.md à la racine |
 | .gitignore présent | Fichier .gitignore configuré |
+| CODEOWNERS présent | Propriétaires du code définis |
+| Commits conventionnels (≥ 80%) | Conventional Commits respectés |
+| Changelog automatisé | release-please / semantic-release |
+| Releases / Tags GitHub | Au moins une release ou un tag |
 
-**Score** : pourcentage de checks réussis sur l'ensemble des checks évalués (les checks `Skipped` sont exclus du total). Un check en état `Warning` (⚠️ passage partiel) compte comme réussi.
+**Scoring** : Pourcentage de checks réussis sur l'ensemble des checks évalués. Les checks `Skipped` sont exclus du total. Un check en état `Warning` (⚠️ passage partiel) compte comme réussi.
 
 ---
 
@@ -133,7 +155,7 @@ src/
 │   ├── score_gauge.rs       # Jauge circulaire SVG
 │   └── results.rs           # Affichage résultats + catégories
 ├── checks/                  # Moteur d'analyse
-│   ├── definitions.rs       # Définitions des 18 checks
+│   ├── definitions.rs       # Définitions des 30 checks
 │   ├── runner.rs            # Logique d'évaluation par check
 │   └── engine.rs            # Orchestrateur + scoring
 ├── models/                  # Modèles de données
@@ -167,8 +189,8 @@ Le workflow CI/CD (`.github/workflows/deploy.yml`) est déjà configuré :
 
 ### Phase 1 — Moteur de Checks + UI ✅
 
-- [x] 18 checks automatisés via l'API GitHub
-- [x] Interface PageSpeed Insights (score circulaire, catégories, détails)
+- [x] 30 checks automatisés via l'API GitHub (18 initiaux + 12 avancés)
+- [x] Interface PageSpeed Insights (score circulaire, 6 catégories par domaine, détails)
 - [x] Suggestions d'amélioration pour chaque check échoué
 - [x] Support du GitHub PAT optionnel
 - [x] Build WASM + déploiement GitHub Pages
