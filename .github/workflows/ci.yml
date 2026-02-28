@@ -1,0 +1,141 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ── Conventional Commits ──────────────────────────────────────────────────
+  commit-lint:
+    name: Conventional Commits
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate commit messages
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          pattern='^(feat|fix|docs|style|refactor|test|chore|ci|build|perf|revert)(\(.+\))?!?: .+'
+          failed=0
+
+          while IFS= read -r msg; do
+            subject=$(echo "$msg" | head -1)
+            if ! echo "$subject" | grep -qE "$pattern"; then
+              echo "❌  \"$subject\""
+              failed=1
+            else
+              echo "✅  \"$subject\""
+            fi
+          done < <(git log "$BASE_SHA..$HEAD_SHA" --pretty=format:'%s')
+
+          if [ "$failed" -eq 1 ]; then
+            echo ""
+            echo "Un ou plusieurs commits ne respectent pas Conventional Commits."
+            echo "Format attendu : type(scope)?: sujet"
+            echo "Types autorisés : feat | fix | docs | style | refactor | test | chore | ci | build | perf | revert"
+            exit 1
+          fi
+
+  # ── Formatting ────────────────────────────────────────────────────────────
+  fmt:
+    name: Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: Check formatting (rustfmt)
+        run: cargo fmt -- --check
+
+  # ── Linting ───────────────────────────────────────────────────────────────
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+          components: clippy
+
+      - name: Cache Cargo registry & build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-clippy-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-clippy-
+
+      - name: Run Clippy
+        run: cargo clippy --target wasm32-unknown-unknown -- -D warnings
+
+  # ── Build + Test — matrix (stable & beta) ────────────────────────────────
+  build:
+    name: Build (${{ matrix.rust }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust: [stable, beta]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust }}
+          targets: wasm32-unknown-unknown
+
+      - name: Cache Cargo registry & build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ matrix.rust }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-${{ matrix.rust }}-
+
+      - name: Build
+        run: cargo build --target wasm32-unknown-unknown
+
+      # Compile the test suite (wasm32 tests run in browser; we verify they
+      # at least compile correctly in CI without a headless browser driver)
+      - name: Verify test compilation
+        run: cargo test --target wasm32-unknown-unknown --no-run
+
+  # ── Security Audit ────────────────────────────────────────────────────────
+  security:
+    name: Security Audit (cargo-audit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-audit-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-audit-
+
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+
+      - name: Run security audit
+        run: cargo audit

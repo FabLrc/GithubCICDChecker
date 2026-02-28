@@ -6,7 +6,7 @@ pub fn footer() -> Html {
         <footer class="footer">
             <p>
                 {"Propulsé par Rust + WebAssembly • "}
-                <a href="https://github.com" target="_blank" rel="noopener">
+                <a href="https://github.com/FabLrc/GithubCICDChecker" target="_blank" rel="noopener noreferrer">
                     {"Code source"}
                 </a>
             </p>

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# .githooks/commit-msg
+# Validates that the commit message follows the Conventional Commits spec.
+# https://www.conventionalcommits.org/
+#
+# Activate with:
+#   git config core.hooksPath .githooks
+#
+# Types allowed: feat, fix, docs, style, refactor, test, chore, ci, build, perf, revert
+
+subject=$(head -1 "$1")
+pattern='^(feat|fix|docs|style|refactor|test|chore|ci|build|perf|revert)(\(.+\))?!?: .+'
+
+if ! echo "$subject" | grep -qE "$pattern"; then
+  printf "\n❌  Commit rejeté — message non conforme.\n\n"
+  printf "   Message   : \"%s\"\n\n" "$subject"
+  printf "   Format    : type(scope)?: sujet\n"
+  printf "   Types OK  : feat | fix | docs | style | refactor | test | chore | ci | build | perf | revert\n\n"
+  printf "   Exemples  :\n"
+  printf "     feat: ajouter le scan de sécurité\n"
+  printf "     fix(api): corriger la gestion des erreurs 404\n"
+  printf "     chore: mettre à jour les dépendances Cargo\n\n"
+  exit 1
+fi

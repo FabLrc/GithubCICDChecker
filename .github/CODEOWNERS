@@ -1,0 +1,10 @@
+# CODEOWNERS
+# Each line is a pattern followed by the owner(s).
+# The last matching pattern takes precedence.
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything in the repo
+* @FabLrc
+
+# CI/CD configuration
+.github/ @FabLrc
