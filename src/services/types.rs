@@ -85,6 +85,28 @@ pub struct TreeResponse {
     pub truncated: bool,
 }
 
+/// GitHub release
+#[derive(Debug, Clone, Deserialize)]
+pub struct Release {
+    pub id: u64,
+    pub tag_name: String,
+    pub name: Option<String>,
+    pub published_at: Option<String>,
+}
+
+/// Git commit list item
+#[derive(Debug, Clone, Deserialize)]
+pub struct CommitItem {
+    pub sha: String,
+    pub commit: CommitDetail,
+}
+
+/// Git commit detail
+#[derive(Debug, Clone, Deserialize)]
+pub struct CommitDetail {
+    pub message: String,
+}
+
 /// API error
 #[derive(Debug, Clone)]
 pub struct ApiError {

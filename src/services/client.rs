@@ -244,6 +244,32 @@ impl GithubClient {
         );
         self.fetch_json(&url).await
     }
+
+    /// Fetch GitHub releases (returns empty vec if none or error)
+    pub async fn fetch_releases(
+        &self,
+        repo: &RepoIdentifier,
+        per_page: u32,
+    ) -> Result<Vec<Release>, ApiError> {
+        let url = format!(
+            "{}/repos/{}/{}/releases?per_page={}",
+            GITHUB_API_BASE, repo.owner, repo.repo, per_page
+        );
+        self.fetch_json(&url).await
+    }
+
+    /// Fetch recent commits from main branch
+    pub async fn fetch_commits(
+        &self,
+        repo: &RepoIdentifier,
+        per_page: u32,
+    ) -> Result<Vec<CommitItem>, ApiError> {
+        let url = format!(
+            "{}/repos/{}/{}/commits?sha=main&per_page={}",
+            GITHUB_API_BASE, repo.owner, repo.repo, per_page
+        );
+        self.fetch_json(&url).await
+    }
 }
 
 #[cfg(test)]
