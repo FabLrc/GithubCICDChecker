@@ -9,34 +9,39 @@ pub enum CheckStatus {
     Skipped,
 }
 
-/// Category grouping checks by difficulty level
+/// Category grouping checks by domain
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CheckCategory {
-    Fundamentals,
-    Intermediate,
-    Advanced,
-    Bonus,
+    Pipeline,
+    QualiteTests,
+    Securite,
+    Conteneurisation,
+    Deploiement,
+    BonnesPratiques,
 }
 
 impl CheckCategory {
     pub fn label(&self) -> &'static str {
         match self {
-            Self::Fundamentals => "Fondamentaux",
-            Self::Intermediate => "Intermédiaire",
-            Self::Advanced => "Avancé",
-            Self::Bonus => "Bonus",
+            Self::Pipeline => "Pipeline CI",
+            Self::QualiteTests => "Qualité & Tests",
+            Self::Securite => "Sécurité",
+            Self::Conteneurisation => "Conteneurisation",
+            Self::Deploiement => "Déploiement",
+            Self::BonnesPratiques => "Bonnes Pratiques",
         }
     }
 
     pub fn icon(&self) -> &'static str {
         match self {
-            Self::Fundamentals => "🟢",
-            Self::Intermediate => "🔵",
-            Self::Advanced => "🟡",
-            Self::Bonus => "⭐",
+            Self::Pipeline => "🔄",
+            Self::QualiteTests => "🧪",
+            Self::Securite => "🔒",
+            Self::Conteneurisation => "🐳",
+            Self::Deploiement => "🚀",
+            Self::BonnesPratiques => "📋",
         }
     }
-
 }
 
 /// Definition of a check to perform

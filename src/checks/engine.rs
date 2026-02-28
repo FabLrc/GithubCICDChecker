@@ -42,12 +42,14 @@ impl CheckEngine {
                 .push(result);
         }
 
-        // Build category scores
+        // Build category scores — ordered to match the UI presentation
         let category_order = [
-            CheckCategory::Fundamentals,
-            CheckCategory::Intermediate,
-            CheckCategory::Advanced,
-            CheckCategory::Bonus,
+            CheckCategory::Pipeline,
+            CheckCategory::QualiteTests,
+            CheckCategory::Securite,
+            CheckCategory::Conteneurisation,
+            CheckCategory::Deploiement,
+            CheckCategory::BonnesPratiques,
         ];
 
         let mut categories = Vec::new();
