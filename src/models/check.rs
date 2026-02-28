@@ -72,11 +72,7 @@ impl CheckResult {
         }
     }
 
-    pub fn failed(
-        check: Check,
-        detail: impl Into<String>,
-        suggestion: impl Into<String>,
-    ) -> Self {
+    pub fn failed(check: Check, detail: impl Into<String>, suggestion: impl Into<String>) -> Self {
         Self {
             check,
             status: CheckStatus::Failed,
@@ -85,11 +81,7 @@ impl CheckResult {
         }
     }
 
-    pub fn warning(
-        check: Check,
-        detail: impl Into<String>,
-        suggestion: impl Into<String>,
-    ) -> Self {
+    pub fn warning(check: Check, detail: impl Into<String>, suggestion: impl Into<String>) -> Self {
         Self {
             check,
             status: CheckStatus::Warning,
