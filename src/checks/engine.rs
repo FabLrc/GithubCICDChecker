@@ -61,7 +61,12 @@ impl CheckEngine {
             // Warnings count as passes; Skipped checks are excluded from the total
             let passed: u32 = cat_results
                 .iter()
-                .filter(|r| matches!(r.status, crate::models::CheckStatus::Passed | crate::models::CheckStatus::Warning))
+                .filter(|r| {
+                    matches!(
+                        r.status,
+                        crate::models::CheckStatus::Passed | crate::models::CheckStatus::Warning
+                    )
+                })
                 .count() as u32;
             let total: u32 = cat_results
                 .iter()
@@ -84,7 +89,10 @@ impl CheckEngine {
             passed: global_passed,
             total: global_total,
             categories,
-            analyzed_at: js_sys::Date::new_0().to_iso_string().as_string().unwrap_or_default(),
+            analyzed_at: js_sys::Date::new_0()
+                .to_iso_string()
+                .as_string()
+                .unwrap_or_default(),
         })
     }
 }

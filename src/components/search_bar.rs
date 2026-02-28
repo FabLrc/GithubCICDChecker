@@ -29,11 +29,7 @@ pub fn search_bar(props: &SearchBarProps) -> Html {
                 .unwrap_or_default();
 
             if !url.is_empty() {
-                let token = if token.is_empty() {
-                    None
-                } else {
-                    Some(token)
-                };
+                let token = if token.is_empty() { None } else { Some(token) };
                 on_analyze.emit((url, token));
             }
         })

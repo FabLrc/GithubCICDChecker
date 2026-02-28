@@ -57,18 +57,11 @@ impl GithubClient {
         }
     }
 
-    async fn fetch_json<T: serde::de::DeserializeOwned>(
-        &self,
-        url: &str,
-    ) -> Result<T, ApiError> {
-        let response = self
-            .build_request(url)
-            .send()
-            .await
-            .map_err(|e| ApiError {
-                status: 0,
-                message: format!("Network error: {}", e),
-            })?;
+    async fn fetch_json<T: serde::de::DeserializeOwned>(&self, url: &str) -> Result<T, ApiError> {
+        let response = self.build_request(url).send().await.map_err(|e| ApiError {
+            status: 0,
+            message: format!("Network error: {}", e),
+        })?;
 
         let status = response.status();
         if status != 200 {
@@ -86,14 +79,10 @@ impl GithubClient {
     }
 
     async fn fetch_text(&self, url: &str) -> Result<String, ApiError> {
-        let response = self
-            .build_request(url)
-            .send()
-            .await
-            .map_err(|e| ApiError {
-                status: 0,
-                message: format!("Network error: {}", e),
-            })?;
+        let response = self.build_request(url).send().await.map_err(|e| ApiError {
+            status: 0,
+            message: format!("Network error: {}", e),
+        })?;
 
         let status = response.status();
         if status != 200 {
@@ -145,15 +134,13 @@ impl GithubClient {
 
         match content.content {
             Some(encoded) => {
-                let cleaned = encoded.replace('\n', "").replace('\r', "");
-                let decoded = base64::Engine::decode(
-                    &base64::engine::general_purpose::STANDARD,
-                    &cleaned,
-                )
-                .map_err(|e| ApiError {
-                    status: 0,
-                    message: format!("Base64 decode error: {}", e),
-                })?;
+                let cleaned = encoded.replace(['\n', '\r'], "");
+                let decoded =
+                    base64::Engine::decode(&base64::engine::general_purpose::STANDARD, &cleaned)
+                        .map_err(|e| ApiError {
+                            status: 0,
+                            message: format!("Base64 decode error: {}", e),
+                        })?;
                 String::from_utf8(decoded).map_err(|e| ApiError {
                     status: 0,
                     message: format!("UTF-8 decode error: {}", e),
@@ -219,11 +206,7 @@ impl GithubClient {
     }
 
     /// Check if a file exists in the repo
-    pub async fn file_exists(
-        &self,
-        repo: &RepoIdentifier,
-        path: &str,
-    ) -> bool {
+    pub async fn file_exists(&self, repo: &RepoIdentifier, path: &str) -> bool {
         let url = format!(
             "{}/repos/{}/{}/contents/{}",
             GITHUB_API_BASE, repo.owner, repo.repo, path
@@ -292,8 +275,7 @@ mod tests {
 
     #[test]
     fn test_parse_trailing_slash() {
-        let result =
-            GithubClient::parse_repo_url("https://github.com/owner/repo/").unwrap();
+        let result = GithubClient::parse_repo_url("https://github.com/owner/repo/").unwrap();
         assert_eq!(result.owner, "owner");
         assert_eq!(result.repo, "repo");
     }
