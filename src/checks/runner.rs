@@ -11,8 +11,7 @@ fn is_conventional_commit(message: &str) -> bool {
         "revert",
     ];
     for prefix in &prefixes {
-        if subject.starts_with(prefix) {
-            let rest = &subject[prefix.len()..];
+        if let Some(rest) = subject.strip_prefix(prefix) {
             // "prefix: " or "prefix!: "
             if rest.starts_with(": ") || rest.starts_with("!: ") {
                 return true;
@@ -30,7 +29,6 @@ fn is_conventional_commit(message: &str) -> bool {
     }
     false
 }
-
 
 /// Runs individual checks against GitHub API data
 pub struct CheckRunner<'a> {
@@ -85,9 +83,7 @@ impl<'a> CheckRunner<'a> {
             Ok(files) => {
                 let yaml_files: Vec<&GithubContent> = files
                     .iter()
-                    .filter(|f| {
-                        f.name.ends_with(".yml") || f.name.ends_with(".yaml")
-                    })
+                    .filter(|f| f.name.ends_with(".yml") || f.name.ends_with(".yaml"))
                     .collect();
 
                 if yaml_files.is_empty() {
@@ -97,11 +93,14 @@ impl<'a> CheckRunner<'a> {
                         "Créez un fichier .github/workflows/ci.yml pour votre pipeline CI/CD",
                     )
                 } else {
-                    let names: Vec<String> =
-                        yaml_files.iter().map(|f| f.name.clone()).collect();
+                    let names: Vec<String> = yaml_files.iter().map(|f| f.name.clone()).collect();
                     CheckResult::passed(
                         check,
-                        format!("{} workflow(s) trouvé(s) : {}", names.len(), names.join(", ")),
+                        format!(
+                            "{} workflow(s) trouvé(s) : {}",
+                            names.len(),
+                            names.join(", ")
+                        ),
                     )
                 }
             }
@@ -145,7 +144,10 @@ impl<'a> CheckRunner<'a> {
                     ),
                 }
             }
-            Err(_) => CheckResult::skipped(check, "Impossible de récupérer les runs (repo privé ou pas de workflows)"),
+            Err(_) => CheckResult::skipped(
+                check,
+                "Impossible de récupérer les runs (repo privé ou pas de workflows)",
+            ),
         }
     }
 
@@ -240,10 +242,10 @@ impl<'a> CheckRunner<'a> {
         let workflow_content = self.aggregate_workflow_content().await;
 
         let secret_patterns = [
-            "AKIA",           // AWS access key prefix
-            "sk-",            // OpenAI / Stripe key prefix
-            "ghp_",           // GitHub PAT
-            "password: ",     // Inline password
+            "AKIA",       // AWS access key prefix
+            "sk-",        // OpenAI / Stripe key prefix
+            "ghp_",       // GitHub PAT
+            "password: ", // Inline password
             "passwd",
             "secret_key",
         ];
@@ -259,10 +261,7 @@ impl<'a> CheckRunner<'a> {
         } else {
             CheckResult::failed(
                 check,
-                format!(
-                    "Patterns suspects détectés : {}",
-                    found_secrets.join(", ")
-                ),
+                format!("Patterns suspects détectés : {}", found_secrets.join(", ")),
                 "Utilisez des GitHub Secrets (${{ secrets.MY_SECRET }}) au lieu de valeurs en dur",
             )
         }
@@ -339,10 +338,7 @@ impl<'a> CheckRunner<'a> {
                 "Ajoutez un outil de coverage (codecov, tarpaulin, istanbul) dans votre CI",
             )
         } else {
-            CheckResult::passed(
-                check,
-                format!("Coverage détectée : {}", found.join(", ")),
-            )
+            CheckResult::passed(check, format!("Coverage détectée : {}", found.join(", ")))
         }
     }
 
@@ -415,11 +411,18 @@ impl<'a> CheckRunner<'a> {
                 let completed_runs: Vec<&WorkflowRun> = runs
                     .workflow_runs
                     .iter()
-                    .filter(|r| r.conclusion.is_some() && r.run_started_at.is_some() && r.updated_at.is_some())
+                    .filter(|r| {
+                        r.conclusion.is_some()
+                            && r.run_started_at.is_some()
+                            && r.updated_at.is_some()
+                    })
                     .collect();
 
                 if completed_runs.is_empty() {
-                    return CheckResult::skipped(check, "Pas assez de runs pour évaluer la vitesse");
+                    return CheckResult::skipped(
+                        check,
+                        "Pas assez de runs pour évaluer la vitesse",
+                    );
                 }
 
                 // Simple duration estimation: we can't do precise parsing in WASM easily,
@@ -459,7 +462,10 @@ impl<'a> CheckRunner<'a> {
         if has_multi_env {
             CheckResult::passed(
                 check,
-                format!("Indicateurs multi-environnement détectés : {}", found.join(", ")),
+                format!(
+                    "Indicateurs multi-environnement détectés : {}",
+                    found.join(", ")
+                ),
             )
         } else {
             CheckResult::failed(
@@ -475,33 +481,17 @@ impl<'a> CheckRunner<'a> {
         let content_lower = workflow_content.to_lowercase();
 
         let deploy_indicators = [
-            "deploy",
-            "publish",
-            "release",
-            "gh-pages",
-            "pages",
-            "aws",
-            "azure",
-            "gcloud",
-            "heroku",
-            "vercel",
-            "netlify",
-            "render",
-            "fly.io",
+            "deploy", "publish", "release", "gh-pages", "pages", "aws", "azure", "gcloud",
+            "heroku", "vercel", "netlify", "render", "fly.io",
         ];
 
         let has_push_trigger =
             content_lower.contains("on:\n  push:") || content_lower.contains("on: [push");
 
-        let has_deploy = deploy_indicators
-            .iter()
-            .any(|d| content_lower.contains(d));
+        let has_deploy = deploy_indicators.iter().any(|d| content_lower.contains(d));
 
         if has_push_trigger && has_deploy {
-            CheckResult::passed(
-                check,
-                "Déploiement automatique détecté sur push",
-            )
+            CheckResult::passed(check, "Déploiement automatique détecté sur push")
         } else if has_deploy {
             CheckResult::warning(
                 check,
@@ -525,10 +515,7 @@ impl<'a> CheckRunner<'a> {
                 .client
                 .file_exists(self.repo, ".github/CODEOWNERS")
                 .await
-            || self
-                .client
-                .file_exists(self.repo, "docs/CODEOWNERS")
-                .await;
+            || self.client.file_exists(self.repo, "docs/CODEOWNERS").await;
 
         if exists {
             CheckResult::passed(check, "Fichier CODEOWNERS trouvé")
@@ -581,7 +568,10 @@ impl<'a> CheckRunner<'a> {
                     ),
                     Some(c) => CheckResult::failed(
                         check,
-                        format!("Pipeline terminé avec le statut '{}' — les tests ont peut-être échoué", c),
+                        format!(
+                            "Pipeline terminé avec le statut '{}' — les tests ont peut-être échoué",
+                            c
+                        ),
                         "Corrigez les tests en échec pour passer ce check",
                     ),
                     None => CheckResult::skipped(check, "Run encore en cours"),
@@ -605,10 +595,7 @@ impl<'a> CheckRunner<'a> {
             || content_lower.contains("build-push-action");
 
         if has_ghcr && has_push {
-            CheckResult::passed(
-                check,
-                "Publication vers ghcr.io détectée dans le pipeline",
-            )
+            CheckResult::passed(check, "Publication vers ghcr.io détectée dans le pipeline")
         } else if has_ghcr {
             CheckResult::warning(
                 check,
@@ -688,10 +675,7 @@ impl<'a> CheckRunner<'a> {
         };
 
         if !cache_type.is_empty() {
-            CheckResult::passed(
-                check,
-                format!("Cache CI détecté : {}", cache_type),
-            )
+            CheckResult::passed(check, format!("Cache CI détecté : {}", cache_type))
         } else {
             CheckResult::failed(
                 check,
@@ -787,7 +771,10 @@ impl<'a> CheckRunner<'a> {
         if defines_reusable {
             CheckResult::passed(check, "Workflow réutilisable défini (workflow_call) — peut être invoqué par d'autres repos")
         } else if calls_reusable {
-            CheckResult::passed(check, "Workflow réutilisable appelé (uses: ./.github/workflows/) — bonne pratique DRY")
+            CheckResult::passed(
+                check,
+                "Workflow réutilisable appelé (uses: ./.github/workflows/) — bonne pratique DRY",
+            )
         } else {
             CheckResult::failed(
                 check,
@@ -949,7 +936,10 @@ impl<'a> CheckRunner<'a> {
         if !found.is_empty() {
             return CheckResult::passed(
                 check,
-                format!("Outil de changelog automatisé détecté : {}", found.join(", ")),
+                format!(
+                    "Outil de changelog automatisé détecté : {}",
+                    found.join(", ")
+                ),
             );
         }
 
@@ -1004,20 +994,14 @@ impl<'a> CheckRunner<'a> {
             || content_lower.contains("undo-deploy")
             || content_lower.contains("undo_deploy")
         {
-            return CheckResult::passed(
-                check,
-                "Mécanisme de rollback détecté dans les workflows",
-            );
+            return CheckResult::passed(check, "Mécanisme de rollback détecté dans les workflows");
         }
 
         // Check for workflow_dispatch with rollback input (manual redeploy)
         if workflow_content.contains("workflow_dispatch:")
             && (content_lower.contains("revert") || content_lower.contains("rollback"))
         {
-            return CheckResult::passed(
-                check,
-                "workflow_dispatch avec option de revert détecté",
-            );
+            return CheckResult::passed(check, "workflow_dispatch avec option de revert détecté");
         }
 
         // Partial credit: workflow_dispatch alone = manual recovery possible
@@ -1049,7 +1033,9 @@ impl<'a> CheckRunner<'a> {
         for file in &files {
             let is_yaml = file.name.ends_with(".yml") || file.name.ends_with(".yaml");
             if is_yaml {
-                if let Ok(file_content) = self.client.fetch_file_content(self.repo, &file.path).await {
+                if let Ok(file_content) =
+                    self.client.fetch_file_content(self.repo, &file.path).await
+                {
                     content.push_str(&file_content);
                     content.push('\n');
                 }
