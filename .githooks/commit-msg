@@ -9,6 +9,12 @@
 # Types allowed: feat, fix, docs, style, refactor, test, chore, ci, build, perf, revert
 
 subject=$(head -1 "$1")
+
+# Allow system merge commits (GitHub, Git merges)
+if echo "$subject" | grep -qE "^(Merge|Squashed|Revert)"; then
+  exit 0
+fi
+
 pattern='^(feat|fix|docs|style|refactor|test|chore|ci|build|perf|revert)(\(.+\))?!?: .+'
 
 if ! echo "$subject" | grep -qE "$pattern"; then

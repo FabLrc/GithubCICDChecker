@@ -27,6 +27,11 @@ jobs:
 
           while IFS= read -r msg; do
             subject=$(echo "$msg" | head -1)
+            # Allow system merge commits
+            if echo "$subject" | grep -qE "^(Merge|Squashed|Revert)"; then
+              echo "✅  \"$subject\" (merge)"
+              continue
+            fi
             if ! echo "$subject" | grep -qE "$pattern"; then
               echo "❌  \"$subject\""
               failed=1
@@ -40,6 +45,7 @@ jobs:
             echo "Un ou plusieurs commits ne respectent pas Conventional Commits."
             echo "Format attendu : type(scope)?: sujet"
             echo "Types autorisés : feat | fix | docs | style | refactor | test | chore | ci | build | perf | revert"
+            echo "(Les commits de merge Merge/Squashed/Revert sont toujours acceptés)"
             exit 1
           fi
 
