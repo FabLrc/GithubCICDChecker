@@ -51,29 +51,36 @@ impl CheckEngine {
         ];
 
         let mut categories = Vec::new();
-        let mut total_earned: u32 = 0;
-        let mut total_max: u32 = 0;
+        let mut global_passed: u32 = 0;
+        let mut global_total: u32 = 0;
 
         for cat in &category_order {
             let cat_results = grouped.remove(cat).unwrap_or_default();
-            let earned: u32 = cat_results.iter().map(|r| r.points_earned).sum();
-            let max: u32 = cat_results.iter().map(|r| r.check.max_points).sum();
+            // Warnings count as passes; Skipped checks are excluded from the total
+            let passed: u32 = cat_results
+                .iter()
+                .filter(|r| matches!(r.status, crate::models::CheckStatus::Passed | crate::models::CheckStatus::Warning))
+                .count() as u32;
+            let total: u32 = cat_results
+                .iter()
+                .filter(|r| !matches!(r.status, crate::models::CheckStatus::Skipped))
+                .count() as u32;
 
-            total_earned += earned;
-            total_max += max;
+            global_passed += passed;
+            global_total += total;
 
             categories.push(CategoryScore {
                 category: cat.clone(),
-                earned,
-                max,
+                passed,
+                total,
                 results: cat_results,
             });
         }
 
         Ok(ScoreReport {
             repository: repo.full_name(),
-            total_score: total_earned,
-            max_score: total_max,
+            passed: global_passed,
+            total: global_total,
             categories,
             analyzed_at: js_sys::Date::new_0().to_iso_string().as_string().unwrap_or_default(),
         })

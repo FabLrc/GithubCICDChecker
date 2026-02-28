@@ -6,17 +6,19 @@ use super::check::{CheckCategory, CheckResult};
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CategoryScore {
     pub category: CheckCategory,
-    pub earned: u32,
-    pub max: u32,
+    /// Number of checks that passed or warned (counted as pass)
+    pub passed: u32,
+    /// Total evaluated checks (excludes Skipped)
+    pub total: u32,
     pub results: Vec<CheckResult>,
 }
 
 impl CategoryScore {
     pub fn percentage(&self) -> f64 {
-        if self.max == 0 {
+        if self.total == 0 {
             return 0.0;
         }
-        (self.earned as f64 / self.max as f64) * 100.0
+        (self.passed as f64 / self.total as f64) * 100.0
     }
 }
 
@@ -24,18 +26,20 @@ impl CategoryScore {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ScoreReport {
     pub repository: String,
-    pub total_score: u32,
-    pub max_score: u32,
+    /// Total checks passed (Passed + Warning) across all categories
+    pub passed: u32,
+    /// Total evaluated checks (excludes Skipped) across all categories
+    pub total: u32,
     pub categories: Vec<CategoryScore>,
     pub analyzed_at: String,
 }
 
 impl ScoreReport {
     pub fn percentage(&self) -> f64 {
-        if self.max_score == 0 {
+        if self.total == 0 {
             return 0.0;
         }
-        (self.total_score as f64 / self.max_score as f64) * 100.0
+        (self.passed as f64 / self.total as f64) * 100.0
     }
 
     /// Color label matching PageSpeed Insights grading

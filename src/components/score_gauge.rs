@@ -2,14 +2,14 @@ use yew::prelude::*;
 
 #[derive(Properties, PartialEq)]
 pub struct ScoreGaugeProps {
-    pub score: u32,
-    pub max_score: u32,
+    pub passed: u32,
+    pub total: u32,
 }
 
 #[function_component(ScoreGauge)]
 pub fn score_gauge(props: &ScoreGaugeProps) -> Html {
-    let percentage = if props.max_score > 0 {
-        ((props.score as f64 / props.max_score as f64) * 100.0).round() as u32
+    let percentage = if props.total > 0 {
+        ((props.passed as f64 / props.total as f64) * 100.0).round() as u32
     } else {
         0
     };
@@ -73,7 +73,7 @@ pub fn score_gauge(props: &ScoreGaugeProps) -> Html {
                     class="gauge-label-text"
                     fill="#5f6368"
                 >
-                    {format!("{}/{}", props.score, props.max_score)}
+                    {format!("{}/{} checks", props.passed, props.total)}
                 </text>
             </svg>
             <div class="gauge-badge" style={format!("color: {}", color)}>

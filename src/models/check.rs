@@ -37,14 +37,6 @@ impl CheckCategory {
         }
     }
 
-    pub fn max_points(&self) -> u32 {
-        match self {
-            Self::Fundamentals => 50,
-            Self::Intermediate => 30,
-            Self::Advanced => 35,
-            Self::Bonus => 10,
-        }
-    }
 }
 
 /// Definition of a check to perform
@@ -54,7 +46,6 @@ pub struct Check {
     pub name: String,
     pub description: String,
     pub category: CheckCategory,
-    pub max_points: u32,
 }
 
 /// Result of running a check
@@ -62,18 +53,15 @@ pub struct Check {
 pub struct CheckResult {
     pub check: Check,
     pub status: CheckStatus,
-    pub points_earned: u32,
     pub detail: String,
     pub suggestion: Option<String>,
 }
 
 impl CheckResult {
     pub fn passed(check: Check, detail: impl Into<String>) -> Self {
-        let points = check.max_points;
         Self {
             check,
             status: CheckStatus::Passed,
-            points_earned: points,
             detail: detail.into(),
             suggestion: None,
         }
@@ -87,7 +75,6 @@ impl CheckResult {
         Self {
             check,
             status: CheckStatus::Failed,
-            points_earned: 0,
             detail: detail.into(),
             suggestion: Some(suggestion.into()),
         }
@@ -95,14 +82,12 @@ impl CheckResult {
 
     pub fn warning(
         check: Check,
-        points: u32,
         detail: impl Into<String>,
         suggestion: impl Into<String>,
     ) -> Self {
         Self {
             check,
             status: CheckStatus::Warning,
-            points_earned: points,
             detail: detail.into(),
             suggestion: Some(suggestion.into()),
         }
@@ -112,7 +97,6 @@ impl CheckResult {
         Self {
             check,
             status: CheckStatus::Skipped,
-            points_earned: 0,
             detail: reason.into(),
             suggestion: None,
         }

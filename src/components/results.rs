@@ -39,7 +39,7 @@ pub fn results(props: &ResultsProps) -> Html {
 
             // ── Score gauge (PageSpeed style) ──
             <div class="results-score-area">
-                <ScoreGauge score={report.total_score} max_score={report.max_score} />
+                <ScoreGauge passed={report.passed} total={report.total} />
             </div>
 
             // ── Category breakdown ──
@@ -96,7 +96,7 @@ fn category_card(props: &CategoryCardProps) -> Html {
                 </div>
                 <div class="category-score-area">
                     <span class="category-score" style={format!("color: {}", color)}>
-                        {format!("{}/{}", cat.earned, cat.max)}
+                        {format!("{}/{}", cat.passed, cat.total)}
                     </span>
                     <div class="category-bar-bg">
                         <div
@@ -153,9 +153,6 @@ fn check_row(props: &CheckRowProps) -> Html {
                 <span class="check-status-icon">{status_icon}</span>
                 <div class="check-info">
                     <span class="check-name">{&r.check.name}</span>
-                    <span class="check-points">
-                        {format!("{}/{} pts", r.points_earned, r.check.max_points)}
-                    </span>
                 </div>
             </div>
 

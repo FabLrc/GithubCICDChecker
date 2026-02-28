@@ -33,44 +33,44 @@
 
 ## Grille de Scoring
 
-### 🟢 Fondamentaux (50 pts)
+### 🟢 Fondamentaux
 
-| Check | Points | Description |
-|-------|--------|-------------|
-| Pipeline CI existe | 5 | Workflow YAML dans `.github/workflows/` |
-| Pipeline vert sur main | 5 | Dernier run sur `main` est en succès |
-| Tests présents | 10 | Tests détectés et exécutés dans la CI |
-| Lint dans la CI | 5 | Step de lint/formatage configuré |
-| Dockerfile présent | 5 | Dockerfile à la racine |
-| Docker build dans CI | 5 | Étape de build Docker dans le pipeline |
-| Pas de secrets dans le code | 10 | Aucun secret hardcodé détecté |
-| README présent | 5 | Fichier README.md à la racine |
+| Check | Description |
+|-------|-------------|
+| Pipeline CI existe | Workflow YAML dans `.github/workflows/` |
+| Pipeline vert sur main | Dernier run sur `main` est en succès |
+| Tests présents | Tests détectés et exécutés dans la CI |
+| Lint dans la CI | Step de lint/formatage configuré |
+| Dockerfile présent | Dockerfile à la racine |
+| Docker build dans CI | Étape de build Docker dans le pipeline |
+| Pas de secrets dans le code | Aucun secret hardcodé détecté |
+| README présent | Fichier README.md à la racine |
 
-### 🔵 Intermédiaire (30 pts)
+### 🔵 Intermédiaire
 
-| Check | Points | Description |
-|-------|--------|-------------|
-| Scan de sécurité | 10 | Trivy / Snyk / CodeQL / etc. dans la CI |
-| Coverage configurée | 10 | Couverture de code configurée |
-| Dependabot / Renovate | 10 | Mise à jour auto des dépendances |
+| Check | Description |
+|-------|-------------|
+| Scan de sécurité | Trivy / Snyk / CodeQL / etc. dans la CI |
+| Coverage configurée | Couverture de code configurée |
+| Dependabot / Renovate | Mise à jour auto des dépendances |
 
-### 🟡 Avancé (35 pts)
+### 🟡 Avancé
 
-| Check | Points | Description |
-|-------|--------|-------------|
-| Protection de branche | 10 | `main` protégée, PR obligatoire |
-| Pipeline rapide (< 5 min) | 5 | Durée raisonnable des runs |
-| Multi-environnements | 10 | staging + prod configurés |
-| Déploiement automatique | 10 | Deploy auto sur push main |
+| Check | Description |
+|-------|-------------|
+| Protection de branche | `main` protégée, PR obligatoire |
+| Pipeline rapide (< 5 min) | Durée raisonnable des runs |
+| Multi-environnements | staging + prod configurés |
+| Déploiement automatique | Deploy auto sur push main |
 
-### ⭐ Bonus (10 pts)
+### ⭐ Bonus
 
-| Check | Points | Description |
-|-------|--------|-------------|
-| CODEOWNERS présent | 5 | Propriétaires du code définis |
-| .gitignore présent | 5 | Fichier .gitignore configuré |
+| Check | Description |
+|-------|-------------|
+| CODEOWNERS présent | Propriétaires du code définis |
+| .gitignore présent | Fichier .gitignore configuré |
 
-**Total : 125 pts** — Score affiché en pourcentage (0-100).
+**Score** : pourcentage de checks réussis sur l'ensemble des checks évalués (les checks `Skipped` sont exclus du total). Un check en état `Warning` (⚠️ passage partiel) compte comme réussi.
 
 ---
 

@@ -97,7 +97,6 @@ impl<'a> CheckRunner<'a> {
                     ),
                     None => CheckResult::warning(
                         check,
-                        0,
                         "Dernier run encore en cours",
                         "Attendez la fin du run et relancez l'analyse",
                     ),
@@ -350,7 +349,6 @@ impl<'a> CheckRunner<'a> {
                 } else {
                     CheckResult::warning(
                         check,
-                        5,
                         "Protection de branche activée mais sans review obligatoire",
                         "Activez 'Require pull request reviews' dans les settings de protection",
                     )
@@ -464,7 +462,6 @@ impl<'a> CheckRunner<'a> {
         } else if has_deploy {
             CheckResult::warning(
                 check,
-                5,
                 "Étape de déploiement trouvée mais pas déclenchée automatiquement",
                 "Configurez un trigger 'on: push' sur la branche main pour le déploiement auto",
             )
