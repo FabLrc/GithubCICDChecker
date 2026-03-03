@@ -101,7 +101,7 @@
 | Technologie | Rôle |
 |-------------|------|
 | **Rust** | Langage principal |
-| **Yew 0.21** | Framework UI (comme React, en Rust) |
+| **Yew** | Framework UI |
 | **wasm-bindgen** | Interop Rust ↔ JavaScript |
 | **gloo-net** | Appels HTTP depuis WASM |
 | **Trunk** | Build toolchain WASM |
