@@ -10,7 +10,7 @@ pub struct ResultsProps {
     pub on_reset: Callback<()>,
 }
 
-#[function_component(Results)]
+#[component(Results)]
 pub fn results(props: &ResultsProps) -> Html {
     let report = &props.report;
 
@@ -64,7 +64,7 @@ struct CategoryCardProps {
     category: CategoryScore,
 }
 
-#[function_component(CategoryCard)]
+#[component(CategoryCard)]
 fn category_card(props: &CategoryCardProps) -> Html {
     let cat = &props.category;
     let expanded = use_state(|| true);
@@ -128,7 +128,7 @@ struct CheckRowProps {
     result: CheckResult,
 }
 
-#[function_component(CheckRow)]
+#[component(CheckRow)]
 fn check_row(props: &CheckRowProps) -> Html {
     let r = &props.result;
     let show_detail = use_state(|| false);

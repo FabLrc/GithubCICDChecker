@@ -18,7 +18,7 @@ pub enum AnalysisState {
     Error(String),
 }
 
-#[function_component(App)]
+#[component(App)]
 pub fn app() -> Html {
     let state = use_state(|| AnalysisState::Idle);
     let token = use_state(|| Option::<String>::None);

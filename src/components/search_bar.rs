@@ -7,7 +7,7 @@ pub struct SearchBarProps {
     pub is_loading: bool,
 }
 
-#[function_component(SearchBar)]
+#[component(SearchBar)]
 pub fn search_bar(props: &SearchBarProps) -> Html {
     let url_ref = use_node_ref();
     let token_ref = use_node_ref();

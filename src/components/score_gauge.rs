@@ -6,7 +6,7 @@ pub struct ScoreGaugeProps {
     pub total: u32,
 }
 
-#[function_component(ScoreGauge)]
+#[component(ScoreGauge)]
 pub fn score_gauge(props: &ScoreGaugeProps) -> Html {
     let percentage = if props.total > 0 {
         ((props.passed as f64 / props.total as f64) * 100.0).round() as u32
